@@ -1,4 +1,5 @@
 import chromadb
+import numpy as np
 from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
 from mitreattack.stix20 import MitreAttackData
@@ -110,7 +111,6 @@ if __name__ == "__main__":
     ingest_groups()
     ingest_mitigations()
     print("ChromaDB fully populated.")
-print("ChromaDB fully populated.")
 
 def format_chroma_get(result):
     out = []
@@ -145,20 +145,43 @@ def lookup_technique_id(query):
 def lookup_group(query, top_k=5):
     query_lower = query.lower()
 
+    matched_group = None
+
     for group in group_to_techs.keys():
-
         if group.lower() in query_lower:
+            matched_group = group
+            break
 
-            technique_ids = group_to_techs[group][:top_k]
+    if not matched_group:
+        return None
 
-            result = col.get(
-                ids=technique_ids,
-                include=["documents", "metadatas"]
-            )
+    technique_ids = group_to_techs[matched_group]
 
-            return format_chroma_get(result)
+    result = col.get(
+        ids=technique_ids,
+        include=["documents", "metadatas"]
+    )
 
-    return None
+    if not result["documents"]:
+        return None
+
+    query_vec = embedder.encode(query)
+
+    doc_vecs = embedder.encode(
+        result["documents"],
+        show_progress_bar=False
+    )
+
+    scores = np.dot(doc_vecs, query_vec)
+
+    top_indices = np.argsort(scores)[::-1][:top_k]
+
+    reranked = {
+        "documents": [result["documents"][i] for i in top_indices],
+        "metadatas": [result["metadatas"][i] for i in top_indices]
+    }
+
+    return format_chroma_get(reranked)
 
 def smart_retrieve(query, top_k=5):
 
