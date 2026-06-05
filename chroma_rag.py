@@ -1,4 +1,5 @@
 import chromadb
+import numpy as np
 from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
 from mitreattack.stix20 import MitreAttackData
@@ -10,6 +11,21 @@ embedder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 client = chromadb.PersistentClient(path="./chroma_attackdb")
 col    = client.get_or_create_collection("attck_objects",
              metadata={"hnsw:space": "cosine"})
+
+with open("index_mappings.json") as f:
+    mappings = json.load(f)
+
+tech_to_groups = mappings["tech_to_groups"]
+tactic_to_techs = mappings["tactic_to_techs"]
+mit_to_techs = mappings["mit_to_techs"]
+
+from collections import defaultdict
+
+group_to_techs = defaultdict(list)
+
+for tech, groups in tech_to_groups.items():
+    for group in groups:
+        group_to_techs[group].append(tech)
 
 def safe_text(val):
     return val if isinstance(val, str) else ""
@@ -90,10 +106,100 @@ def _batch_upsert(docs, metas, ids, batch=200):
             ids=ids[i:i+batch],
         )
 
-ingest_techniques()
-ingest_groups()
-ingest_mitigations()
-print("ChromaDB fully populated.")
+if __name__ == "__main__":
+    ingest_techniques()
+    ingest_groups()
+    ingest_mitigations()
+    print("ChromaDB fully populated.")
+
+def format_chroma_get(result):
+    out = []
+
+    for i, meta in enumerate(result["metadatas"]):
+        out.append({
+            **meta,
+            "text": result["documents"][i],
+            "score": 1.0
+        })
+
+    return out
+
+def lookup_technique_id(query):
+    match = re.search(r"T\d{4}(?:\.\d{3})?", query)
+
+    if not match:
+        return None
+
+    tid = match.group()
+
+    result = col.get(
+        ids=[tid],
+        include=["documents", "metadatas"]
+    )
+
+    if not result["ids"]:
+        return None
+
+    return format_chroma_get(result)
+
+def lookup_group(query, top_k=5):
+    query_lower = query.lower()
+
+    matched_group = None
+
+    for group in group_to_techs.keys():
+        if group.lower() in query_lower:
+            matched_group = group
+            break
+
+    if not matched_group:
+        return None
+
+    technique_ids = group_to_techs[matched_group]
+
+    result = col.get(
+        ids=technique_ids,
+        include=["documents", "metadatas"]
+    )
+
+    if not result["documents"]:
+        return None
+
+    query_vec = embedder.encode(query)
+
+    doc_vecs = embedder.encode(
+        result["documents"],
+        show_progress_bar=False
+    )
+
+    scores = np.dot(doc_vecs, query_vec)
+
+    top_indices = np.argsort(scores)[::-1][:top_k]
+
+    reranked = {
+        "documents": [result["documents"][i] for i in top_indices],
+        "metadatas": [result["metadatas"][i] for i in top_indices]
+    }
+
+    return format_chroma_get(reranked)
+
+def smart_retrieve(query, top_k=5):
+
+    tech_result = lookup_technique_id(query)
+
+    if tech_result:
+        print("[Router] Technique ID lookup")
+        return tech_result
+
+    group_result = lookup_group(query, top_k)
+
+    if group_result:
+        print("[Router] Group relationship lookup")
+        return group_result
+
+    print("[Router] Semantic search")
+
+    return hybrid_retrieve(query, top_k=top_k)
 
 # ── Hybrid retrieval function ────────────────────────────────────────────────
 def hybrid_retrieve(query: str, tactic: str = None,
