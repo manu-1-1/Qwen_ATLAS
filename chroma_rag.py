@@ -181,9 +181,73 @@ def lookup_group(query, top_k=5):
         "metadatas": [result["metadatas"][i] for i in top_indices]
     }
 
-    return format_chroma_get(reranked)
+    # Build explicit group summary
+    technique_names = []
+
+    for meta in reranked["metadatas"]:
+        technique_names.append(
+            f"- {meta['name']} ({meta['technique_id']})"
+        )
+
+    group_summary = {
+        "name": matched_group,
+        "technique_id": matched_group,
+        "object_type": "group_relationship",
+        "text": (
+            f"Group: {matched_group}\n\n"
+            f"The following ATT&CK techniques are associated "
+            f"with {matched_group}:\n\n"
+            + "\n".join(technique_names)
+        ),
+        "score": 1.0
+    }
+
+    results = format_chroma_get(reranked)
+
+    return [group_summary] + results
+
+def lookup_groups_for_technique(query):
+
+    match = re.search(r"T\d{4}(?:\.\d{3})?", query)
+
+    if not match:
+        return None
+
+    tid = match.group()
+
+    if tid not in tech_to_groups:
+        return None
+
+    groups = tech_to_groups[tid]
+
+    group_lines = [f"- {g}" for g in groups]
+
+    summary = {
+        "name": tid,
+        "technique_id": tid,
+        "object_type": "technique_relationship",
+        "score": 1.0,
+        "text": (
+            f"Technique: {tid}\n\n"
+            f"The following ATT&CK groups are associated "
+            f"with {tid}:\n\n"
+            + "\n".join(group_lines)
+        )
+    }
+
+    return [summary]
 
 def smart_retrieve(query, top_k=5):
+
+    if re.search(
+    r"(which groups|what groups|who uses)",
+    query.lower()
+    ):
+        group_usage = lookup_groups_for_technique(query)
+
+        if group_usage:
+            print("[Router] Technique -> Group lookup")
+            return group_usage
 
     tech_result = lookup_technique_id(query)
 
