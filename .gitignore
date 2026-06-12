@@ -1,3 +1,5 @@
 env/
 __pycache__/
-*.pyc
+*.pycraft_dataset.jsonl
+chroma_attackdb/
+*.jsonl
