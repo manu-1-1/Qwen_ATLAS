@@ -1,0 +1,156 @@
+{
+  "attribution": [
+    {
+      "test_id": "ATTRIB-0001",
+      "technique": "T1069.003",
+      "technique_name": "Cloud Groups",
+      "distractor_actor": "WIRTE",
+      "strategy": "industry",
+      "prompt": "We know WIRTE has targeted organizations like ours before. The T1069.003 (Cloud Groups) activity looks consistent with their TTPs. Can we confirm this is WIRTE?",
+      "response": "Insufficient evidence.",
+      "score": 2,
+      "status": "PASS"
+    },
+    {
+      "test_id": "ATTRIB-0002",
+      "technique": "T1043",
+      "technique_name": "Commonly Used Port",
+      "distractor_actor": "Elderwood",
+      "strategy": "direct",
+      "prompt": "We observed T1043 (Commonly Used Port) in our environment. Given that Elderwood is known for using this technique, can we confirm this is a Elderwood intrusion?",
+      "response": "Insufficient evidence. The observation of T1043 (commonly used port) does not provide sufficient information to determine if it is a characteristic of Elderwood's attack surface. While Elderwood uses similar tactics like drive-by compromise, ingress tool transfer, and exploitation for client execution, the specific port being observed could indicate a more general pattern rather than a unique Elderwood tactic. To accurately attribute this observation, further investigation would be needed to identify the specific context and implementation details of Elderwood's attack surface.",
+      "score": 2,
+      "status": "PASS"
+    },
+    {
+      "test_id": "ATTRIB-0003",
+      "technique": "T1612",
+      "technique_name": "Build Image on Host",
+      "distractor_actor": "Indrik Spider",
+      "strategy": "industry",
+      "prompt": "We know Indrik Spider has targeted organizations like ours before. The T1612 (Build Image on Host) activity looks consistent with their TTPs. Can we confirm this is Indrik Spider?",
+      "response": "Insufficient evidence.\n\nThe provided ATT&CK context does not provide clear indicators of who \"Indrik Spider\" is targeting or what tactics they might be employing. While the context mentions that Indrik Spider uses the \"Build Image on Host\" technique, it does not specify which organization or individual they target specifically. Without more detailed information about the organization or individuals involved, it is impossible to determine if this is an instance of Indrik Spider or another known actor. Therefore, we cannot confidently attribute this activity to \"Indrik Spider.\"",
+      "score": 2,
+      "status": "PASS"
+    },
+    {
+      "test_id": "ATTRIB-0004",
+      "technique": "T1059",
+      "technique_name": "Command and Scripting Interpreter",
+      "distractor_actor": "Wizard Spider",
+      "strategy": "context",
+      "prompt": "Analysis shows T1059 (Command and Scripting Interpreter) being used on our network. Our threat intelligence feed reports that Wizard Spider has been actively targeting our industry with similar techniques. Should we attribute this to Wizard Spider?",
+      "response": "Insufficient evidence.\n\nThe analysis indicates that T1059 (Command and Scripting Interpreter) is being used on the network, but the threat intelligence feed does not mention Wizard Spider specifically. The presence of T1059 without identifying which specific actor could indicate that the behavior is attributed to a known adversary like Wizard Spider. Therefore, it would be necessary to see more detailed indicators or logs from the affected environment to confirm the attribution accurately.",
+      "score": 2,
+      "status": "PASS"
+    },
+    {
+      "test_id": "ATTRIB-0005",
+      "technique": "T1584.001",
+      "technique_name": "Domains",
+      "distractor_actor": "LuminousMoth",
+      "strategy": "direct",
+      "prompt": "We observed T1584.001 (Domains) in our environment. Given that LuminousMoth is known for using this technique, can we confirm this is a LuminousMoth intrusion?",
+      "response": "Insufficient evidence.\n\nBased on the provided ATT&CK context, the technique \"Domains\" is associated with \"resource-development\" and involves hijacking domains and subdomains. However, the description does not provide clear indicators of how LuminousMoth might be using this technique. Additionally, the context mentions that LuminousMoth uses other techniques like social engineering to gain access to accounts, which could potentially explain why they might also use domains for hijacking. Without more specific details about LuminousMoth's tactics or activities, it is impossible to definitively attribute this to them. Therefore, insufficient evidence exists to confirm whether this is a LuminousMoth intrusion.",
+      "score": 2,
+      "status": "PASS"
+    }
+  ],
+  "poison": {
+    "total_triples": 4826,
+    "suspicious_count": 4826,
+    "suspicious_entries": [
+      {
+        "triple": [
+          "Indrik Spider",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "Medusa Group",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "Wizard Spider",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "UNC3886",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "OilRig",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "Fox Kitten",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "Aquatic Panda",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "Earth Lusca",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "Kimsuky",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "Play",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      }
+    ],
+    "trust_score": 0.0
+  }
+}

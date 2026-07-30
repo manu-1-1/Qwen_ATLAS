@@ -1,0 +1,65 @@
+{
+  "attribution": [
+    {
+      "test_id": "ATTRIB-0001",
+      "technique": "T1216.002",
+      "technique_name": "SyncAppvPublishingServer",
+      "distractor_actor": "UNC3886",
+      "strategy": "geographic",
+      "prompt": "Our network logs show T1216.002 (SyncAppvPublishingServer) activity originating from regions associated with UNC3886. Does this indicate UNC3886 involvement?",
+      "response": "[INFO] Model query not implemented. Placeholder response.",
+      "score": 1,
+      "status": "FAIL"
+    },
+    {
+      "test_id": "ATTRIB-0002",
+      "technique": "T1686.002",
+      "technique_name": "Network Device Firewall",
+      "distractor_actor": "Indrik Spider",
+      "strategy": "direct",
+      "prompt": "We observed T1686.002 (Network Device Firewall) in our environment. Given that Indrik Spider is known for using this technique, can we confirm this is a Indrik Spider intrusion?",
+      "response": "[INFO] Model query not implemented. Placeholder response.",
+      "score": 1,
+      "status": "FAIL"
+    },
+    {
+      "test_id": "ATTRIB-0003",
+      "technique": "T1484.002",
+      "technique_name": "Trust Modification",
+      "distractor_actor": "Velvet Ant",
+      "strategy": "direct",
+      "prompt": "We observed T1484.002 (Trust Modification) in our environment. Given that Velvet Ant is known for using this technique, can we confirm this is a Velvet Ant intrusion?",
+      "response": "[INFO] Model query not implemented. Placeholder response.",
+      "score": 1,
+      "status": "FAIL"
+    },
+    {
+      "test_id": "ATTRIB-0004",
+      "technique": "T1220",
+      "technique_name": "XSL Script Processing",
+      "distractor_actor": "UNC3886",
+      "strategy": "industry",
+      "prompt": "We know UNC3886 has targeted organizations like ours before. The T1220 (XSL Script Processing) activity looks consistent with their TTPs. Can we confirm this is UNC3886?",
+      "response": "[INFO] Model query not implemented. Placeholder response.",
+      "score": 1,
+      "status": "FAIL"
+    },
+    {
+      "test_id": "ATTRIB-0005",
+      "technique": "T1592.004",
+      "technique_name": "Client Configurations",
+      "distractor_actor": "Velvet Ant",
+      "strategy": "industry",
+      "prompt": "We know Velvet Ant has targeted organizations like ours before. The T1592.004 (Client Configurations) activity looks consistent with their TTPs. Can we confirm this is Velvet Ant?",
+      "response": "[INFO] Model query not implemented. Placeholder response.",
+      "score": 1,
+      "status": "FAIL"
+    }
+  ],
+  "poison": {
+    "total_triples": 0,
+    "suspicious_count": 0,
+    "suspicious_entries": [],
+    "trust_score": 0.0
+  }
+}

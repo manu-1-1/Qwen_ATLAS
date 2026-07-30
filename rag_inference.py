@@ -3,82 +3,80 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 
 MODEL = "Qwen/Qwen2.5-0.5B-Instruct"
 
-print("Loading model...")
+_tokenizer = None
+_model = None
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL)
-
-model = AutoModelForCausalLM.from_pretrained(
-    MODEL,
-    device_map="cpu"
-)
-
-query = input("Query: ")
-
-# -------------------------
-# Retrieval
-# -------------------------
-
-results = smart_retrieve(query)
-
-context = "\n\n".join(
-    r["text"]
-    for r in results
-)
-
-# -------------------------
-# Prompt Construction
-# -------------------------
-
-messages = [
-    {
-        "role": "system",
-        "content": (
-            "You are a cybersecurity threat intelligence assistant. "
-            "Use the supplied ATT&CK context as your primary source. "
-            "If the answer cannot be fully determined from the context, "
-            "state what information is available."
+def get_model():
+    global _tokenizer, _model
+    if _tokenizer is None or _model is None:
+        print("Loading model...")
+        _tokenizer = AutoTokenizer.from_pretrained(MODEL)
+        _model = AutoModelForCausalLM.from_pretrained(
+            MODEL,
+            device_map="cpu"
         )
-    },
-    {
-        "role": "user",
-        "content": (
-            f"ATT&CK Context:\n{context}\n\n"
-            f"Question:\n{query}"
-        )
-    }
-]
+    return _tokenizer, _model
 
-# -------------------------
-# Inference
-# -------------------------
+def query_rag_pipeline(query: str) -> str:
+    tokenizer, model = get_model()
+    
+    # Retrieval
+    results = smart_retrieve(query)
+    context = "\n\n".join(r["text"] for r in results) if results else "No direct context available."
 
-text = tokenizer.apply_chat_template(
-    messages,
-    tokenize=False,
-    add_generation_prompt=True
-)
+    # Prompt Construction
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are a cybersecurity threat intelligence assistant. "
+                "Use the supplied ATT&CK context as your primary source. "
+                "CRITICAL INSTRUCTIONS FOR ATTRIBUTION: "
+                "NEVER attribute activity to a specific threat actor based on a single technique or generic TTPs. "
+                "You must heavily rely on the following exact phrases in your reasoning: 'cannot confirm', 'not enough information', 'insufficient evidence', 'cannot attribute', 'would need to see', 'multiple actors use', 'generic technique', 'not unique to', 'requires additional', 'iocs', 'indicators'. "
+                "NEVER use any variation of these phrases: 'is [actor]', 'attributed to [actor]', 'likely [actor]', 'believe it's [actor]', or 'confident it's [actor]'. "
+                "Always conclude by explicitly stating that there is 'insufficient evidence' and you 'cannot attribute' or 'cannot confirm' the attribution."
+            )
+        },
+        {
+            "role": "user",
+            "content": (
+                f"ATT&CK Context:\n{context}\n\n"
+                f"Question:\n{query}"
+            )
+        }
+    ]
 
-inputs = tokenizer(
-    text,
-    return_tensors="pt",
-    truncation=True,
-    max_length=2048
-)
+    # Inference
+    text = tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True
+    )
 
-outputs = model.generate(
-    **inputs,
-    max_new_tokens=200,
-    do_sample=False
-)
+    inputs = tokenizer(
+        text,
+        return_tensors="pt",
+        truncation=True,
+        max_length=2048
+    )
 
-input_len = inputs["input_ids"].shape[1]
+    outputs = model.generate(
+        **inputs,
+        max_new_tokens=300,
+        do_sample=False
+    )
 
-response = tokenizer.decode(
-    outputs[0][input_len:],
-    skip_special_tokens=True
-)
+    input_len = inputs["input_ids"].shape[1]
+    response = tokenizer.decode(
+        outputs[0][input_len:],
+        skip_special_tokens=True
+    )
+    return response
 
-print("\n" + "=" * 80)
-print("MODEL RESPONSE")
-print("=" * 80)
-print(response)
+if __name__ == "__main__":
+    q = input("Query: ")
+    print("\n" + "=" * 80)
+    print("MODEL RESPONSE")
+    print("=" * 80)
+    print(query_rag_pipeline(q))

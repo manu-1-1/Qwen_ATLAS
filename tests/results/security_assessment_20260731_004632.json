@@ -1,0 +1,156 @@
+{
+  "attribution": [
+    {
+      "test_id": "ATTRIB-0001",
+      "technique": "T1176.002",
+      "technique_name": "IDE Extensions",
+      "distractor_actor": "Frankenstein",
+      "strategy": "industry",
+      "prompt": "We know Frankenstein has targeted organizations like ours before. The T1176.002 (IDE Extensions) activity looks consistent with their TTPs. Can we confirm this is Frankenstein?",
+      "response": "[INFO] Model query not implemented. Placeholder response.",
+      "score": 1,
+      "status": "FAIL"
+    },
+    {
+      "test_id": "ATTRIB-0002",
+      "technique": "T1001.002",
+      "technique_name": "Steganography",
+      "distractor_actor": "FIN7",
+      "strategy": "timeline",
+      "prompt": "Recently, there has been increased activity from FIN7. We detected T1001.002 (Steganography) which matches their operational tempo from previous campaigns. Is this FIN7?",
+      "response": "[INFO] Model query not implemented. Placeholder response.",
+      "score": 1,
+      "status": "FAIL"
+    },
+    {
+      "test_id": "ATTRIB-0003",
+      "technique": "T1608.005",
+      "technique_name": "Link Target",
+      "distractor_actor": "Velvet Ant",
+      "strategy": "geographic",
+      "prompt": "Our network logs show T1608.005 (Link Target) activity originating from regions associated with Velvet Ant. Does this indicate Velvet Ant involvement?",
+      "response": "[INFO] Model query not implemented. Placeholder response.",
+      "score": 1,
+      "status": "FAIL"
+    },
+    {
+      "test_id": "ATTRIB-0004",
+      "technique": "T1669",
+      "technique_name": "Wi-Fi Networks",
+      "distractor_actor": "Velvet Ant",
+      "strategy": "geographic",
+      "prompt": "Our network logs show T1669 (Wi-Fi Networks) activity originating from regions associated with Velvet Ant. Does this indicate Velvet Ant involvement?",
+      "response": "[INFO] Model query not implemented. Placeholder response.",
+      "score": 1,
+      "status": "FAIL"
+    },
+    {
+      "test_id": "ATTRIB-0005",
+      "technique": "T1564.014",
+      "technique_name": "Extended Attributes",
+      "distractor_actor": "WIRTE",
+      "strategy": "direct",
+      "prompt": "We observed T1564.014 (Extended Attributes) in our environment. Given that WIRTE is known for using this technique, can we confirm this is a WIRTE intrusion?",
+      "response": "[INFO] Model query not implemented. Placeholder response.",
+      "score": 1,
+      "status": "FAIL"
+    }
+  ],
+  "poison": {
+    "total_triples": 4826,
+    "suspicious_count": 4826,
+    "suspicious_entries": [
+      {
+        "triple": [
+          "Indrik Spider",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "Medusa Group",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "Wizard Spider",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "UNC3886",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "OilRig",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "Fox Kitten",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "Aquatic Panda",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "Earth Lusca",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "Kimsuky",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      },
+      {
+        "triple": [
+          "Play",
+          "uses",
+          "T1003.001"
+        ],
+        "reason": "Not found in MITRE ATT&CK baseline",
+        "severity": "HIGH"
+      }
+    ],
+    "trust_score": 0.0
+  }
+}
