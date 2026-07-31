@@ -44,29 +44,58 @@ class QwenATLASTester:
                 attack_data = json.load(f)
             
             id_to_name = {}
+            id_to_aliases = {}
             id_to_tech = {}
             
+            group_uses_tech = {}
+            group_uses_software = {}
+            software_uses_tech = {}
+            
             if "objects" in attack_data:
+                # First pass: map IDs
                 for obj in attack_data["objects"]:
-                    if obj.get("type") == "intrusion-set":
-                        id_to_name[obj.get("id")] = obj.get("name")
-                    elif obj.get("type") == "attack-pattern":
+                    obj_type = obj.get("type")
+                    obj_id = obj.get("id")
+                    if obj_type == "intrusion-set":
+                        id_to_name[obj_id] = obj.get("name")
+                        aliases = [obj.get("name")] + obj.get("aliases", [])
+                        id_to_aliases[obj_id] = aliases
+                    elif obj_type == "attack-pattern":
                         refs = obj.get("external_references", [])
                         if refs:
-                            id_to_tech[obj.get("id")] = refs[0].get("external_id", "")
-                
+                            id_to_tech[obj_id] = refs[0].get("external_id", "")
+                            
+                # Second pass: map relationships
                 for obj in attack_data["objects"]:
                     if obj.get("type") == "relationship" and obj.get("relationship_type") == "uses":
                         source = obj.get("source_ref", "")
                         target = obj.get("target_ref", "")
                         
-                        actor_name = id_to_name.get(source)
-                        tech_id = id_to_tech.get(target)
-                        
-                        if actor_name and tech_id:
-                            golden_triples.append((actor_name, "uses", tech_id))
+                        if source.startswith("intrusion-set--") and target.startswith("attack-pattern--"):
+                            group_uses_tech.setdefault(source, set()).add(target)
+                        elif source.startswith("intrusion-set--") and target.startswith(("malware--", "tool--")):
+                            group_uses_software.setdefault(source, set()).add(target)
+                        elif source.startswith(("malware--", "tool--")) and target.startswith("attack-pattern--"):
+                            software_uses_tech.setdefault(source, set()).add(target)
+                            
+                # Third pass: build golden triples (Direct)
+                for group_id, tech_set in group_uses_tech.items():
+                    for tech_target in tech_set:
+                        tech_id = id_to_tech.get(tech_target)
+                        if tech_id:
+                            for alias in id_to_aliases.get(group_id, []):
+                                golden_triples.append((alias, "uses", tech_id))
+                                
+                # Fourth pass: build golden triples (Indirect via Software)
+                for group_id, sw_set in group_uses_software.items():
+                    for sw_id in sw_set:
+                        for tech_target in software_uses_tech.get(sw_id, []):
+                            tech_id = id_to_tech.get(tech_target)
+                            if tech_id:
+                                for alias in id_to_aliases.get(group_id, []):
+                                    golden_triples.append((alias, "uses", tech_id))
                     
-            print(f"Loaded {len(golden_triples)} golden triples from MITRE data")
+            print(f"Loaded {len(golden_triples)} golden triples from MITRE data (including aliases & indirect paths)")
             
         except Exception as e:
             print(f"Warning: Could not load golden baseline: {e}")
